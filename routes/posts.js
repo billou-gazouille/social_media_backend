@@ -94,10 +94,10 @@ router.post('/comment', async (req, res) => {
             text: comment,
             date: new Date(),
         };
-        //await Comment.create(newComment);
+        const newCommentDoc = await Comment.create(newComment);
         const addComment = await Post.updateOne(
             { _id: postId }, 
-            { $push: { comments: newComment } }
+            { $push: { comments: newCommentDoc._id } }
         );
         if (addComment.updateCount === 0)
             return res.json({
