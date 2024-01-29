@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const bcrypt = require('bcrypt');
 const uid2 = require("uid2");
 
@@ -44,7 +44,7 @@ router.post('/signup', async (req, res) => {
         result: false, 
         error: 'User with this username already exists' 
       });
-    res.status(200).json({ result: true });
+    res.status(200).json({ result: true, token: newUser.token });
   }
   catch(err) {
     res.status(500).json({ result: false, error: err.message });
@@ -107,7 +107,7 @@ router.post('/signin', async (req, res) => {
     user.remainingLoginAttempts = N_LOGIN_ATTEMPTS;
     user.lastFailedLoginTime = null;
     await user.save();
-    res.status(200).json({ result: true });
+    res.status(200).json({ result: true, token: user.token });
   }
   
   catch(err) {
