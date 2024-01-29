@@ -95,6 +95,12 @@ router.post('/comment', async (req, res) => {
             date: new Date(),
         };
         const newCommentDoc = await Comment.create(newComment);
+        if (!newCommentDoc)
+            return res.json({
+                result: false,
+                error: "Couldn't save the comment"
+            });
+
         const addComment = await Post.updateOne(
             { _id: postId }, 
             { $push: { comments: newCommentDoc._id } }
@@ -102,7 +108,7 @@ router.post('/comment', async (req, res) => {
         if (addComment.updateCount === 0)
             return res.json({
                 result: false,
-                error: "Couldn't save the comment"
+                error: "Couldn't add comment to list"
             });
 
         res.status(200).json({ result: true });
