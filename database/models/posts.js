@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { commentSchema } = require('./comments');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const postSchema = mongoose.Schema({
@@ -7,7 +6,7 @@ const postSchema = mongoose.Schema({
     content: String,
     date: Date,
     likes: [{ type: ObjectId, ref: 'users' }],
-    comments: [commentSchema],
+    comments: [{ type: ObjectId, ref: 'comments' }],
     isPrivate: Boolean,
 });
 

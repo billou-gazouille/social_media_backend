@@ -93,6 +93,7 @@ router.post('/comment', async (req, res) => {
             user: user._id,
             text: comment,
             date: new Date(),
+            comments: []
         };
         const newCommentDoc = await Comment.create(newComment);
         if (!newCommentDoc)
