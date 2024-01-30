@@ -28,9 +28,7 @@ router.post('/signup', async (req, res) => {
     username, 
     password: bcrypt.hashSync(password, N_HASHING_ROUNDS),
     token: uid2(TOKEN_LENTGH),
-    isAccountBlocked: false,
     remainingLoginAttempts: N_LOGIN_ATTEMPTS,
-    lastFailedLoginTime: null,
   }
   try {
     // if username exists do nothing, otherwise create new user:

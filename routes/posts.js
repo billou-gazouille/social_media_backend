@@ -91,9 +91,7 @@ router.post('/comment', async (req, res) => {
 
         const newComment = {
             user: user._id,
-            text: comment,
-            date: new Date(),
-            comments: []
+            text: comment
         };
         const newCommentDoc = await Comment.create(newComment);
         if (!newCommentDoc)
@@ -110,6 +108,47 @@ router.post('/comment', async (req, res) => {
             return res.json({
                 result: false,
                 error: "Couldn't add comment to list"
+            });
+
+        res.status(200).json({ result: true });
+    }
+  
+    catch(err) {
+        res.status(500).json({ result: false, error: err.message });
+    }
+});
+
+
+router.post('/like', async (req, res) => {
+    if (! checkBody(req.body, ['userToken', 'postId']))
+        return res.status(400).json({ 
+            result: false, 
+            error: 'Invalid request body'
+        });
+    
+    const { userToken, postId } = req.body;
+  
+    try {
+        const user = await User.findOne({ token: userToken });
+        if (!user)
+            return res.status(400).json({ 
+                result: false, 
+                error: 'No user found with the provided token'
+            });
+
+        const post = await Post.findById(postId);
+        const alreadyLiked = post.likes.includes(user._id);
+        const operation = alreadyLiked ? '$pull' : '$push';
+        
+        const toggleLike = await Post.updateOne(
+            { _id: postId }, 
+            { [operation] : { likes: user._id } }
+        );
+
+        if (toggleLike.updateCount === 0)
+            return res.json({
+                result: false,
+                error: "Couldn't like or unlike the post"
             });
 
         res.status(200).json({ result: true });
