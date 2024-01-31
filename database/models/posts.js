@@ -13,8 +13,7 @@ const postSchema = mongoose.Schema({
         required: true 
     },
     date: { 
-        type: Date, 
-        default: [],
+        type: Date,
         set: () => new Date(), 
         required: true,
         immutable: true,

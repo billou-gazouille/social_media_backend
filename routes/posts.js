@@ -9,8 +9,20 @@ const { Post } = require('../database/models/posts');
 const { Comment } = require('../database/models/comments');
 
 
+// get all posts:
+router.get('/all', async (req, res) => {
+    try {
+        const posts = await Post.find();
+        res.status(200).json({ result: true, posts });
+    }
+    catch(err) {
+        res.status(500).json({ result: false, error: err.message });
+    }
+});
+
+
 // get all posts from the given user:
-router.post('/', async (req, res) => {
+router.post('/mine', async (req, res) => {
     if (! checkBody(req.body, ['userToken']))
         return res.status(400).json({ 
             result: false, 
@@ -26,11 +38,14 @@ router.post('/', async (req, res) => {
                 result: false, 
                 error: 'No user found with the provided token'
             });
-
-        const posts = await Post.find({ user: user._id });
-        res.status(200).json({ result: true, posts });
+        try {
+            const posts = await Post.find({ user: user._id });
+            res.status(200).json({ result: true, posts });
+        }
+        catch(err){
+            res.status(500).json({ result: false, error: err.message });
+        }
     }
-  
     catch(err) {
         res.status(500).json({ result: false, error: err.message });
     }

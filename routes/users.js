@@ -22,29 +22,31 @@ router.post('/signup', async (req, res) => {
       result: false, 
       error: 'Invalid request body'
     });
-  
+
   const { username, password } = req.body;
-  const newUser = { 
-    username, 
-    password: bcrypt.hashSync(password, N_HASHING_ROUNDS),
-    token: uid2(TOKEN_LENTGH),
-    remainingLoginAttempts: N_LOGIN_ATTEMPTS,
-  }
-  try {
-    // if username exists do nothing, otherwise create new user:
-    const findAndAdd = await User.findOneAndUpdate(
-      { username },
-      { $setOnInsert: newUser },
-      { upsert: true, includeResultMetadata: true }
-    );
-    if (findAndAdd.lastErrorObject.updatedExisting)
+  
+  try{
+    const user = await User.findOne({ username });
+    if (user)
       return res.status(400).json({ 
         result: false, 
-        error: 'User with this username already exists' 
+        error: 'A user with this username already exists' 
       });
-    res.status(200).json({ result: true, token: newUser.token });
+    try{  
+      const newUser = { 
+        username, 
+        password: bcrypt.hashSync(password, N_HASHING_ROUNDS),
+        token: uid2(TOKEN_LENTGH),
+        remainingLoginAttempts: N_LOGIN_ATTEMPTS,
+      };
+      const newUserDoc = await User.create(newUser);
+      res.status(200).json({ result: true, token: newUserDoc.token });
+    }
+    catch(err){
+      res.status(500).json({ result: false, error: err.message });
+    }
   }
-  catch(err) {
+  catch(err){
     res.status(500).json({ result: false, error: err.message });
   }
 });

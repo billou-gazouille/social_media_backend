@@ -24,7 +24,6 @@ const userSchema = mongoose.Schema({
         type: Boolean, 
         required: true,
         default: false,
-        set: () => false,
     },
     remainingLoginAttempts: { 
         type: Number, 
@@ -33,8 +32,8 @@ const userSchema = mongoose.Schema({
     lastFailedLoginTime: { 
         type: Date, 
         required: true,
-        default: null,
-        set: () => null,
+        default: () => new Date(),
+        set: () => new Date(),
     },
     posts: [{ 
         type: ObjectId, 
